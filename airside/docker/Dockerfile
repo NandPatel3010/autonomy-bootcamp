@@ -20,9 +20,13 @@ ENV DEBIAN_FRONTEND=noninteractive
 # (ROS Snapshot builder, fingerprint 4B63CF8FDE49746E98FA01DDAD19BAB3CBF125EA),
 # vendored next to this file.
 ARG ROS_SNAPSHOT=2026-08-07
-COPY airside/docker/ros-snapshots.asc /usr/share/keyrings/ros-snapshots.asc
-RUN rm /etc/apt/sources.list.d/ros2.sources \
-  && printf 'Types: deb\nURIs: http://snapshots.ros.org/humble/%s/ubuntu\nSuites: jammy\nComponents: main\nSigned-By: /usr/share/keyrings/ros-snapshots.asc\n' \
+COPY airside/docker/ros-snapshots.asc /tmp/ros-snapshots.asc
+RUN gpg --batch --yes --dearmor \
+    --output /usr/share/keyrings/ros-snapshots.gpg \
+    /tmp/ros-snapshots.asc \
+  && chmod 644 /usr/share/keyrings/ros-snapshots.gpg \
+  && rm -f /etc/apt/sources.list.d/ros2.sources \
+  && printf 'Types: deb\nURIs: http://snapshots.ros.org/humble/%s/ubuntu\nSuites: jammy\nComponents: main\nSigned-By: /usr/share/keyrings/ros-snapshots.gpg\n' \
      "${ROS_SNAPSHOT}" > /etc/apt/sources.list.d/ros2-snapshot.sources
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
