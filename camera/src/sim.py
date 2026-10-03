@@ -17,7 +17,9 @@ indexes look different. Fill values, gradients, and
 """
 
 from time import time
+
 import numpy as np
+
 from .abstract_camera import AbstractCamera
 from .frame import CameraFrame
 
